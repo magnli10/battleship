@@ -3,6 +3,7 @@ module.exports = function(grunt) {
 
     // Project configuration.
     grunt.initConfig({
+        pkg: grunt.file.readJSON('package.json'),
         copy: {
             build: {
                 cwd: 'source',
@@ -47,11 +48,8 @@ module.exports = function(grunt) {
                 browser: true,
                 globals: {}
             },
-            gruntfile: {
-                src: 'Gruntfile.js'
-            },
-            lib_test: {
-                src: ['lib/**/*.js', 'tests/**/*.js']
+            target: {
+                src: ['Gruntfile.js', 'source/**/*.js']
             }
         },
         simplemocha: {
@@ -82,13 +80,14 @@ module.exports = function(grunt) {
         uglify: {
             build: {
                 options: {
-                    mangle: false
+                    mangle: false,
+                    banner: '/* <%= pkg.name %> : Created by Magnus Lien.*/\n'
                 },
                 files: [
                     {
                         expand: true,     // Enable dynamic expansion.
                         cwd: 'build',      // Src matches are relative to this path.
-                        src: ['**/*.js'], // Actual pattern(s) to match.
+                        src: ['**/*.js', '!**/*.min.js'], // Actual pattern(s) to match.
                         dest: 'build',   // Destination path prefix.
                         ext: '.min.js',   // Dest filepaths will have this extension.
                         extDot: 'last'   // Extensions in filenames begin after the first dot
@@ -139,7 +138,8 @@ module.exports = function(grunt) {
 
 
     // Default task.
-    grunt.registerTask('default',[ 'build', 'tests', 'watch' ]);
+    grunt.registerTask('default',[ 'tests', 'build', 'watch' ]);
+
     grunt.registerTask(
         'tests',
         'Run tests',
@@ -161,5 +161,5 @@ module.exports = function(grunt) {
         'Compile JavaScript',
         [  'traceur','uglify' ]
     );
-
+//
 };
